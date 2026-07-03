@@ -2,14 +2,14 @@
 ; Screen frame UDGs
 ; -------------------------------------------------------------------
 udgsCommon:
-db $00, $03, $07, $0e, $1d, $3a, $35, $3a ; $90 Top Left
-db $00, $ff, $ff, $aa, $55, $aa, $00, $00 ; $91 Top
-db $00, $e0, $d0, $e8, $74, $ba, $5c, $3a ; $92 Top Right
-db $34, $3a, $34, $3a, $34, $3a, $34, $3a ; $93 Left
-db $3c, $3a, $3c, $3a, $3c, $3a, $3c, $3a ; $94 Right
-db $34, $3a, $3d, $1f, $0f, $05, $02, $00 ; $95 Bottom Left
-db $00, $00, $ff, $ff, $ff, $55, $aa, $00 ; $96 Bottom
-db $3a, $7c, $fa, $f4, $e8, $50, $a0, $00 ; $97 Bottom Right
+db $00, $00, $00, $07, $0f, $1d, $1a, $1d ; $90 Top Left
+db $00, $00, $00, $ff, $ff, $55, $aa, $55 ; $91 Top
+db $00, $00, $00, $e0, $d0, $68, $d0, $e8 ; $92 Top Right
+db $1a, $1d, $1a, $1d, $1a, $1d, $1a, $1d ; $93 Left
+db $d0, $e8, $d0, $e8, $d0, $e8, $d0, $e8 ; $94 Right
+db $1b, $1f, $15, $0a, $05, $00, $00, $00 ; $95 Bottom Left
+db $ff, $ff, $55, $aa, $55, $00, $00, $00 ; $96 Bottom
+db $d0, $a8, $50, $a0, $40, $00, $00, $00 ; $97 Bottom Right
 
 ; -------------------------------------------------------------------
 ; Display frame for the game screen

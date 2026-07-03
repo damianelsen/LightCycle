@@ -1,5 +1,11 @@
 org  $5dfd
 
+; -------------------------------------------------------------------
+; Global Game Indicators (0 = No, 1 = Yes)
+; Bit 0: Allow game movement? 
+; -------------------------------------------------------------------
+flags:    db $00
+
 Main:
      ld   hl, ATTR_PERM
      ld   (hl), $46           ; 01000010b = No flash, Bright, Black paper, Yellow ink
@@ -16,6 +22,12 @@ Main:
      ld   hl, udgsCommon      ; HL = UDG address
      ld   (UDG), hl           ; Load custom UDGs
 
+     di                       ; Disable interrupts
+     ld   a, $28              ; Load A with 40d
+     ld   i, a                ; Load from A to I
+     im   2                   ; Set Mode 2 interrupts
+     ei                       ; Enable interrupts
+
      call PrintFrame
      call PrintInfoLabels
      call PrintScores
@@ -25,20 +37,16 @@ Main:
      call ClearArena
 
      mainLoop:
-          ld   hl, player1config
-          call DisplayPlayer
-          ld   hl, player2config
-          call DisplayPlayer
+          ld   a, (flags)               ; Load the Global Game Indicators
+          bit  $00, a                   ; Check if we should allow movement, Bit 0 = Allow game movement?
+          jr   z, mainLoop              ; If 0, then exit
+          res  $00, a                   ; If 1, then reset to 0
+          ld   (flags), a               ; Update the Global Game Indicators
 
+          call DisplayPlayers
           call CheckCtrlP1
-
-          ld   hl, player1config + $03
-          call MovePlayer
-          ld   hl, player2config + $03
-          call MovePlayer
-
+          call MovePlayers
           call CheckPlayers
-          call PrintScores
      jr mainLoop
 
 include "const.asm"

@@ -1,5 +1,17 @@
 ; -------------------------------------------------------------------
-; Changes the position of a player
+; Updates the positions of both players
+; Input: none
+; Alters the value of registers: HL
+; -------------------------------------------------------------------
+DisplayPlayers:
+     ld   hl, player1config
+     call DisplayPlayer
+     ld   hl, player2config
+     ;call DisplayPlayer
+ret
+
+; -------------------------------------------------------------------
+; Updates the position of a player in the game arena
 ; Input: HL = Player config (at byte 1)
 ; Alters the value of registers: AF BC HL
 ; -------------------------------------------------------------------
@@ -9,9 +21,9 @@ DisplayPlayer:
      ld   c, (hl)                  ; Load value into C
      ld   a, (bc)                  ; Load video memory byte for player's position into A
      inc  hl                       ; 3rd byte of player config
+     call CheckCollision
      or   (hl)                     ; Combine player's position with video memory byte
      ld   (bc), a                  ; Write updated video memory byte back to player's position
-     halt
 ret
 
 ; -------------------------------------------------------------------

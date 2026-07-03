@@ -14,20 +14,21 @@
 ; -------------------------------------------------------------------
 CheckCtrlP1:
      ld   hl, player1config + $03  ; Load address of 4th byte of player 1 config to HL
-     xor  d                        ; Clear D to store the key pressed
+     ld   d, $00                   ; Clear D to store the key pressed
      ld   a, $df                   ; Load A with half-stack for keys P-Y
      in   a, ($fe)                 ; Read keyboard
-     bit  $01, a                   ; Check if bit 0 is 0 (key O pressed)
+     checkCtrlP1Left:
+     bit  $01, a                   ; Check if bit 1 is 0 (key O pressed)
      jr   nz, checkCtrlP1Right     ; Z=1, not pressed, skip
      bit  $01, (hl)                ; Check to see if the player is currently travelling right
-     jr   nz, checkCtrlP1Right     ; If not zero, player is currently travelling right so we can't go left
+     jr   nz, checkCtrlP1End       ; If not zero, player is currently travelling right so we can't go left
      set  $00, d                   ; Z=0, set bit 0 = left
      jr   checkCtrlP1Cont
      checkCtrlP1Right:
-     bit  $00, a                   ; Check if bit 1 is 0 (key P pressed)
+     bit  $00, a                   ; Check if bit 0 is 0 (key P pressed)
      jr   nz, checkCtrlP1Up        ; Z=1, not pressed, skip
      bit  $00, (hl)                ; Check to see if the player is currently travelling left
-     jr   nz, checkCtrlP1Up        ; If not zero, player is currently travelling left so we can't go right
+     jr   nz, checkCtrlP1End       ; If not zero, player is currently travelling left so we can't go right
      set  $01, d                   ; Z=0, set bit 1 = right
      jr   checkCtrlP1Cont
      checkCtrlP1Up:
@@ -36,7 +37,7 @@ CheckCtrlP1:
      bit  $00, a                   ; Check if bit 0 is 0 (key Q pressed)
      jr   nz, checkCtrlP1Down      ; Z=1, not pressed, skip
      bit  $03, (hl)                ; Check to see if the player is currently travelling down
-     jr   nz, checkCtrlP1Down      ; If not zero, player is currently travelling down so we can't go up
+     jr   nz, checkCtrlP1End       ; If not zero, player is currently travelling down so we can't go up
      set  $02, d                   ; Z=0, set bit 2 = up
      jr   checkCtrlP1Cont
      checkCtrlP1Down:

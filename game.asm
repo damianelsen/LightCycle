@@ -1,4 +1,16 @@
 ; -------------------------------------------------------------------
+; Changes the position of both players
+; Input: none
+; Alters the value of registers: AF, HL 
+; -------------------------------------------------------------------
+MovePlayers:
+     ld   hl, player1config + $03
+     call MovePlayer
+     ld   hl, player2config + $03
+     ;call MovePlayer
+ret
+
+; -------------------------------------------------------------------
 ; Changes the position of a player
 ; Input: HL = Player config (at byte 4)
 ; Alters the value of registers: AF, BC, HL 
@@ -117,6 +129,24 @@ MovePlayer:
 ret
 
 ; -------------------------------------------------------------------
+; Checks if a player has collided with something in the game arena
+; Input: A  = Video memory byte for player's position
+;        HL = Address for 3rd byte of player config
+; Alters the value of registers: DE
+; -------------------------------------------------------------------
+CheckCollision:
+     push af                       ; Preserve A
+     ld   d, (hl)                  ; Load D with 3rd byte of player config
+     and  d                        ; AND with A (video memory byte of player's position)
+     jr   z, CheckCollisionEnd     ; If 0, there is no collision
+     inc  hl                       ; Move to the 4th byte of player config
+     res  $04, (hl)                ; Clear bit 4 to indicate the player has collided and is no longer active
+     dec  hl                       ; Move to the 3rd byte of player config
+     CheckCollisionEnd:
+     pop  af                       ; Retrieve A
+ret
+
+; -------------------------------------------------------------------
 ; Checks if a player is still active
 ; Input: HL = Player config (at byte 4)
 ; Alters the value of registers: HL
@@ -136,5 +166,6 @@ CheckPlayers:
      ld   hl, player1score
      checkPlayersCont:
      inc  (hl)                     ; Increment player score
-     jp   mainRestart
+     call PrintScores
+jp   mainRestart
 
