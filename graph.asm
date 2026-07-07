@@ -7,7 +7,7 @@ DisplayPlayers:
      ld   hl, player1config
      call DisplayPlayer
      ld   hl, player2config
-     ;call DisplayPlayer
+     call DisplayPlayer
 ret
 
 ; -------------------------------------------------------------------

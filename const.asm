@@ -1,6 +1,6 @@
 ; Memory addresses for various game elements
 ATTR_PERM:     equ $5c8d      ; Memory address where permanent color attributes are stored (FBPPPIII)
-ATTR_TEMP:     equ $5c8f      ; Memory address where attributes used by RST $10 are stored (FBPPPIII)
+;ATTR_TEMP:     equ $5c8f      ; Memory address where attributes used by RST $10 are stored (FBPPPIII)
 BORDERCR:      equ $5c48      ; Memory address where color attributes of the border are stored (FBPPPIII)
 UDG:           equ $5c7b      ; Memory address where the first user-defined graphic (UDG) is stored
 

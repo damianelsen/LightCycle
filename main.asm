@@ -1,15 +1,11 @@
 org  $5dfd
 
-; -------------------------------------------------------------------
-; Global Game Indicators (0 = No, 1 = Yes)
-; Bit 0: Allow game movement? 
-; -------------------------------------------------------------------
-flags:    db $00
+flags:    db $00    ; Global Game Indicators: Bit 0 - Allow game movement? 0 = No, 1 = Yes
+timer:    db $00    ; Used to track the elapsed time of each match
 
 Main:
      ld   hl, ATTR_PERM
      ld   (hl), $46           ; 01000010b = No flash, Bright, Black paper, Yellow ink
-     call CLS
 
      xor  a                   ; Set A = 0 = black
      out  ($fe), a            ; Set border color
@@ -28,12 +24,17 @@ Main:
      im   2                   ; Set Mode 2 interrupts
      ei                       ; Enable interrupts
 
+     call PrintMainScreen
+
+     mainRestartGame:
+     call ResetGame
      call PrintFrame
      call PrintInfoLabels
      call PrintScores
 
-     mainRestart:
-     call ResetConfig
+     mainRestartMatch:
+     call ResetMatch
+     call PrintTime
      call ClearArena
 
      mainLoop:
@@ -47,6 +48,8 @@ Main:
           call CheckCtrlP1
           call MovePlayers
           call CheckPlayers
+          call CheckScores
+          call PrintTime
      jr mainLoop
 
 include "const.asm"
@@ -55,5 +58,6 @@ include "print.asm"
 include "game.asm"
 include "graph.asm"
 include "control.asm"
+include "sound.asm"
 
 end  Main

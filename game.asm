@@ -1,3 +1,5 @@
+; TODO: Implement player death animation
+
 ; -------------------------------------------------------------------
 ; Changes the position of both players
 ; Input: none
@@ -7,7 +9,7 @@ MovePlayers:
      ld   hl, player1config + $03
      call MovePlayer
      ld   hl, player2config + $03
-     ;call MovePlayer
+     call MovePlayer
 ret
 
 ; -------------------------------------------------------------------
@@ -26,7 +28,7 @@ MovePlayer:
      bit  $01, a                   ; Check if bit 1 is active (moving right)
      jr   nz, movePlayerRight
 
-     movePlayerLeft:               ; Bit 0 is active (moving left)
+     ;movePlayerLeft               ; Bit 0 is active (moving left)
      dec  hl                       ; Move to the 3rd byte of player config
      ld   a, (hl)                  ; Load value into A
      cp   $80                      ; Check if the player is at the left edge of the byte
@@ -92,6 +94,7 @@ MovePlayer:
      ld   b, (hl)                  ; Load the 1st byte of player config into B
      bit  $02, a                   ; Check if bit 2 is active (moving up)
      jr   nz, movePlayerUp         ; If bit 2 is active, jump to movePlayerUp
+     ;movePlayerDown
      call NextScan                 ; Move to the next scan line
      ld   a, b                     ; Load 1st byte of player config into A
      and  $18                      ; Mask with 00011000b to get the screen Third
@@ -102,7 +105,6 @@ MovePlayer:
      cp   $a0                      ; Compare with 10100000b to see if we are on Line 5
      jr   z, movePlayerUpDownCrash ; If zero, jump to indicate the player is no longer active
      jr   movePlayerUpDownCont
-
      movePlayerUp:
      call PreviousScan             ; Move to the previous scan line
      ld   a, b                     ; Load 1st byte of player config into A
@@ -119,7 +121,6 @@ MovePlayer:
      dec  hl                       ; Move to the 3rd byte of player config
      dec  hl                       ; Move to the 2nd byte of player config
      dec  hl                       ; Move to the 1st byte of player config
-
      movePlayerUpDownCont:
      ld   (hl), b                  ; Write updated 1st byte of player config
      inc  hl                       ; Move to the 2nd byte of player config
@@ -156,16 +157,34 @@ CheckPlayers:
      bit  $04, (hl)                ; Check if bit 4 is active (player is alive)
      jr   nz, checkPlayer2         ; If alive, check player 2
      ;call DisplayPlayerDeath       ; Display player 1 death animation
-     ld   hl, player2score
+     ld   hl, player2score         ; Load memory address of player 1's score
      jr   checkPlayersCont
      checkPlayer2:
      ld   hl, player2config + $03  ; Load address of 4th byte of player 2 config to HL
      bit  $04, (hl)                ; Check if bit 4 is active (player is alive)
      ret  nz                       ; If alive, exit
      ;call DisplayPlayerDeath       ; Display player 2 death animation
-     ld   hl, player1score
+     ld   hl, player1score         ; Load memory address of player 1's score
      checkPlayersCont:
      inc  (hl)                     ; Increment player score
-     call PrintScores
-jp   mainRestart
+     call PrintScores              ; Update the score display
+jp   mainRestartMatch
 
+; -------------------------------------------------------------------
+; Checks if either player has won the game (won 5 matches)
+; Input: none
+; Alters the value of registers: AF, HL
+; -------------------------------------------------------------------
+CheckScores:
+     ld   hl, player1score         ; Load memory address of player 1's score
+     ld   a, (hl)                  ; Load player 1's score into A
+     cp   $05                      ; Compare with 5d
+     jr   z, CheckScoresEnd        ; If 5, then jump
+     ;CheckScoresP2
+     ld   hl, player2score         ; Load memory address of player 2's score
+     ld   a, (hl)                  ; Load player 2's score into A
+     cp   $05                      ; Compare with 5d
+     ret  nz                      ; If not 5, then exit
+     CheckScoresEnd:
+     call PrintEndGameScreen
+jp   mainRestartGame

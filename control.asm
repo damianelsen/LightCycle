@@ -1,15 +1,14 @@
+; TODO: Add Kempston joystick support
+; TODO: Add player 2 controls
+
 ; -------------------------------------------------------------------
 ; Evaluates whether a direction has been pressed
 ;  Key O -> Left
 ;  Key P -> Right
 ;  Key Q -> Up
 ;  Key A -> Down
-; Return: D (key pressed)
-; -------------------------------------------------------------------
-;  Bit 0  | Bit 1  | Bit 2  | Bit 3
-; -------------------------------------------------------------------
-;  Left   | Right  | Up     | Down
-; -------------------------------------------------------------------
+; Input: none
+; Output: D (key pressed) Bit 0 = Left, Bit 1 = Right, Bit 2 = Up, Bit 3 = Down
 ; Alters the value of registers: AF, DE, HL
 ; -------------------------------------------------------------------
 CheckCtrlP1:
@@ -17,7 +16,7 @@ CheckCtrlP1:
      ld   d, $00                   ; Clear D to store the key pressed
      ld   a, $df                   ; Load A with half-stack for keys P-Y
      in   a, ($fe)                 ; Read keyboard
-     checkCtrlP1Left:
+     ;checkCtrlP1Left
      bit  $01, a                   ; Check if bit 1 is 0 (key O pressed)
      jr   nz, checkCtrlP1Right     ; Z=1, not pressed, skip
      bit  $01, (hl)                ; Check to see if the player is currently travelling right
