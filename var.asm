@@ -137,7 +137,7 @@ db $ff                                       ; String terminator
 ; Byte 3 indicates the player's location within the current byte
 ; -------------------------------------------------------------------
                                         ;     TT SSS LLL CCCCC          XXXADURL
-player1config: db $4d, $47, $80, $12    ; 010 01 101 010 00011 10000000 00010010
+player1config: db $4d, $47, $80, $12    ; 010 01 101 010 00111 10000000 00010010
 player2config: db $4d, $58, $01, $11    ; 010 01 101 010 11101 00000001 00010001
 
 ; -------------------------------------------------------------------
@@ -176,3 +176,5 @@ ResetGame:
      ld   (ix), $00
      ld   (ix + $01), $00
 ret
+
+counter: db $00

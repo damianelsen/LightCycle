@@ -45,7 +45,7 @@ Main:
           ld   (flags), a               ; Update the Global Game Indicators
 
           call DisplayPlayers
-          call CheckCtrlP1
+          call CheckControls
           call MovePlayers
           call CheckPlayers
           call CheckScores
