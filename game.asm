@@ -36,13 +36,6 @@ MovePlayer:
      dec  hl                       ; Move to the 2nd byte of player config
      ld   a, (hl)                  ; Load value into A
      and  $1f                      ; Mask with 00011111 to get the column number
-     cp   $01                      ; Compare with 00000001b (01d) to check if the player is at the left edge of the screen
-     jr   nz, movePlayerLeftCont2  ; If not, continue to move the player left
-     inc  hl                       ; Move to the 3rd byte of player config
-     inc  hl                       ; Move to the 4th byte of player config
-     res  $04, (hl)                ; Clear bit 4 to indicate the player is no longer active
-     jr   movePlayerEnd
-     movePlayerLeftCont2:
      dec  a                        ; Move player left by decrementing the column number
      ld   d, a                     ; Store new column number in D
      ld   a, (hl)                  ; Load 2nd byte of player config into A again
@@ -65,13 +58,6 @@ MovePlayer:
      dec  hl                       ; Move to the 2nd byte of player config
      ld   a, (hl)                  ; Load value into A
      and  $1f                      ; Mask with 00011111 to get the column number
-     cp   $1e                      ; Compare with 00011110b (30d) to check if the player is at the right edge of the screen
-     jr   nz, movePlayerRightCont2 ; If not, continue to move the player right
-     inc  hl                       ; Move to the 3rd byte of player config
-     inc  hl                       ; Move to the 4th byte of player config
-     res  $04, (hl)                ; Clear bit 4 to indicate the player is no longer active
-     jr   movePlayerEnd
-     movePlayerRightCont2:
      inc  a                        ; Move player right by incrementing the column number
      ld   d, a                     ; Store new column number in D
      ld   a, (hl)                  ; Load 2nd byte of player config into A again

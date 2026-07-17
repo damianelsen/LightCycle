@@ -73,58 +73,91 @@ PreviousScan:
 ret
 
 ; -------------------------------------------------------------------
+; Move right by one pixel
+; Input:  C  = Video byte
+;         DE = Video byte memory address
+; Output: C  = Updated video byte
+;         DE = Updated video byte memory address
+; Alters the value of registers: AF, BC, DE
+; -------------------------------------------------------------------
+NextBit:
+     ld   a, c                ; Load A with video byte
+     rrca                     ; Rotate A right with carry
+     jr   nc, nextBitCont
+     ld   a, e                ; Load 2nd byte of video byte memory address into A
+     and  $1f                 ; Mask with 00011111 to get the column number
+     inc  a                   ; Move right by incrementing the column number
+     ld   c, a                ; Store new column number in C
+     ld   a, e                ; Load 2nd byte of video byte memory address into A again
+     and  $e0                 ; Mask with 11100000 to get the line number
+     or   c                   ; Combine line number with new column number
+     ld   e, a                ; Load updated 2nd byte of video byte memory address into E
+     ld   a, $80              ; Set A to 10000000b to move the player's position to the left of the next byte
+     nextBitCont:
+     ld   c, a                ; Load C with updated video byte
+ret
+
+; -------------------------------------------------------------------
+; Move left by one pixel
+; Input:  C  = Video byte
+;         DE = Video byte memory address
+; Output: C  = Updated video byte
+;         DE = Updated video byte memory address
+; Alters the value of registers: AF, BC, DE
+; -------------------------------------------------------------------
+PreviousBit:
+     ld   a, c                ; Load A with video byte
+     rlca                     ; Rotate A right with carry
+     jr   nc, previousBitCont
+     ld   a, e                ; Load 2nd byte of video byte memory address into A
+     and  $1f                 ; Mask with 00011111 to get the column number
+     dec  a                   ; Move left by decrementing the column number
+     ld   c, a                ; Store new column number in C
+     ld   a, e                ; Load 2nd byte of video byte memory address into A again
+     and  $e0                 ; Mask with 11100000 to get the line number
+     or   c                   ; Combine line number with new column number
+     ld   e, a                ; Load updated 2nd byte of video byte memory address into E
+     ld   a, $01              ; Set A to 00000001b to move the player's position to the right of the next byte
+     previousBitCont:
+     ld   c, a                ; Load C with updated video byte
+ret
+
+; -------------------------------------------------------------------
 ; Display player death animation
 ; Input: HL = Player config (at byte 4)
 ; Alters the value of registers: AF, BC, DE, HL
 ; -------------------------------------------------------------------
 DisplayPlayerDeath:
-     push hl                       ; Preserve HL
-     ld   hl, counter              ; Load HL with counter address
-     ld   (hl), $02                ; Load 2d into counter (loop two times)
-     pop  hl                       ; Retrieve HL
-     displayPlayerDeathLoop:
-          call LoadPlayerLocation
-          call SetCounter
-          call MoveUpByOffset
-          call SetCounter
-          call MoveRightByOffset
-          call UpdateVideoByte
-          call LoadPlayerLocation
-          call SetCounter
-          call MoveDownByOffset
-          call SetCounter
-          call MoveRightByOffset
-          call UpdateVideoByte
-          call LoadPlayerLocation
-          call SetCounter
-          call MoveDownByOffset
-          call SetCounter
-          call MoveLeftByOffset
-          call UpdateVideoByte
-          call LoadPlayerLocation
-          call SetCounter
-          call MoveUpByOffset
-          call SetCounter
-          call MoveLeftByOffset
-          call UpdateVideoByte
-          ld   a, (counter)        ; Load A with counter
-          dec  a                   ; Decrement the counter
-          ld   (counter), a        ; Store updated counter
-          cp   $00                 ; Compare with 0d
-     jr   nz, displayPlayerDeathLoop
-ret
-
-; -------------------------------------------------------------------
-; Load B register with counter value to ready it for looping
-; Input:  none
-; Output: B updated with counter value
-; Alters the value of registers: BC
-; -------------------------------------------------------------------
-SetCounter:
-     push hl                       ; Preserve HL
-     ld   hl, counter              ; Load HL with counter address
-     ld   b, (hl)                  ; Load B with counter value
-     pop  hl                       ; Retrieve HL
+     call LoadPlayerLocation
+     call PreviousScan        ; Move to the previous scan line
+     call NextBit             ; Move to the next pixel
+     call UpdateVideoByte     ; Update the display
+     call PreviousScan        ; Move to the previous scan line
+     call NextBit             ; Move to the next pixel
+     call UpdateVideoByte     ; Update the display
+     call LoadPlayerLocation
+     call NextScan            ; Move to the next scan line
+     call NextBit             ; Move to the next pixel
+     call UpdateVideoByte     ; Update the display
+     call NextScan            ; Move to the next scan line
+     call NextBit             ; Move to the next pixel
+     call UpdateVideoByte     ; Update the display
+     call LoadPlayerLocation
+     call NextScan            ; Move to the next scan line
+     call PreviousBit         ; Move to the previous pixel
+     call UpdateVideoByte     ; Update the display
+     call NextScan            ; Move to the next scan line
+     call PreviousBit         ; Move to the previous pixel
+     call UpdateVideoByte     ; Update the display
+     call LoadPlayerLocation
+     call PreviousScan        ; Move to the previous scan line
+     call PreviousBit         ; Move to the previous pixel
+     call UpdateVideoByte     ; Update the display
+     call PreviousScan        ; Move to the previous scan line
+     call PreviousBit         ; Move to the previous pixel
+     call UpdateVideoByte     ; Update the display
+     halt
+     call Debug
 ret
 
 ; -------------------------------------------------------------------
@@ -153,86 +186,4 @@ UpdateVideoByte:
      ld   a, (de)
      or   c
      ld   (de), a
-ret
-
-; -------------------------------------------------------------------
-; Move up by <offset> pixels
-; Input:  B  = Offset (# of pixels)
-;         DE = Video byte memory address
-; Output: DE = Updated video byte memory address
-; Alters the value of registers: BC
-; -------------------------------------------------------------------
-MoveUpByOffset:
-     moveUpByOffsetLoop:
-          call PreviousScan        ; Move to the previous scan line
-     djnz moveUpByOffsetLoop       ; Loop until B = 0
-ret
-
-; -------------------------------------------------------------------
-; Move down by <offset> pixels
-; Input:  B  = Offset (# of pixels)
-;         DE = Video byte memory address
-; Output: DE = Updated video byte memory address
-; Alters the value of registers: BC
-; -------------------------------------------------------------------
-MoveDownByOffset:
-     moveDownByOffsetLoop:
-          call NextScan            ; Move to the next scan line
-     djnz moveDownByOffsetLoop     ; Loop until B = 0
-ret
-
-; -------------------------------------------------------------------
-; Move right by <offset> pixels
-; Input:  B  = Offset (# of pixels)
-;         C  = Video byte
-;         DE = Video byte memory address
-; Output: C  = Updated video byte
-;         DE = Updated video byte memory address
-; Alters the value of registers: AF, BC, DE
-; -------------------------------------------------------------------
-MoveRightByOffset:
-     ld   a, c                     ; Load A with video byte
-     moveRightByOffsetLoop:
-          rrca                     ; Rotate A right with carry
-          jr   nc, moveRightByOffsetLoopCont
-          ld   a, e                ; Load 2nd byte of video byte memory address into A
-          and  $1f                 ; Mask with 00011111 to get the column number
-          inc  a                   ; Move right by incrementing the column number
-          ld   c, a                ; Store new column number in C
-          ld   a, e                ; Load 2nd byte of video byte memory address into A again
-          and  $e0                 ; Mask with 11100000 to get the line number
-          or   c                   ; Combine line number with new column number
-          ld   e, a                ; Load updated 2nd byte of video byte memory address into E
-          ld   a, $80              ; Set A to 10000000b to move the player's position to the left of the next byte
-          moveRightByOffsetLoopCont:
-     djnz moveRightByOffsetLoop    ; Loop until B = 0
-     ld   c, a                     ; Load C with updated video byte
-ret
-
-; -------------------------------------------------------------------
-; Move left by <offset> pixels
-; Input:  B  = Offset (# of pixels)
-;         C  = Video byte
-;         DE = Video byte memory address
-; Output: C  = Updated video byte
-;         DE = Updated video byte memory address
-; Alters the value of registers: AF, BC, DE
-; -------------------------------------------------------------------
-MoveLeftByOffset:
-     ld   a, c                     ; Load A with video byte
-     moveLeftByOffsetLoop:
-          rlca                     ; Rotate A right with carry
-          jr   nc, moveLeftByOffsetLoopCont
-          ld   a, e                ; Load 2nd byte of video byte memory address into A
-          and  $1f                 ; Mask with 00011111 to get the column number
-          dec  a                   ; Move left by decrementing the column number
-          ld   c, a                ; Store new column number in C
-          ld   a, e                ; Load 2nd byte of video byte memory address into A again
-          and  $e0                 ; Mask with 11100000 to get the line number
-          or   c                   ; Combine line number with new column number
-          ld   e, a                ; Load updated 2nd byte of video byte memory address into E
-          ld   a, $01              ; Set A to 00000001b to move the player's position to the right of the next byte
-          moveLeftByOffsetLoopCont:
-     djnz moveLeftByOffsetLoop     ; Loop until B = 0
-     ld   c, a                     ; Load C with updated video byte
 ret

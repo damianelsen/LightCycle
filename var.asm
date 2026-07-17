@@ -74,14 +74,14 @@ db $ff                                       ; String terminator
 ; Screen frame UDGs
 ; -------------------------------------------------------------------
 udgsCommon:
-db $00, $00, $00, $07, $0f, $1d, $1a, $1d    ; $90 Top Left
-db $00, $00, $00, $ff, $ff, $55, $aa, $55    ; $91 Top
-db $00, $00, $00, $e0, $d0, $68, $d0, $e8    ; $92 Top Right
-db $1a, $1d, $1a, $1d, $1a, $1d, $1a, $1d    ; $93 Left
-db $d0, $e8, $d0, $e8, $d0, $e8, $d0, $e8    ; $94 Right
-db $1b, $1f, $15, $0a, $05, $00, $00, $00    ; $95 Bottom Left
-db $ff, $ff, $55, $aa, $55, $00, $00, $00    ; $96 Bottom
-db $d0, $a8, $50, $a0, $40, $00, $00, $00    ; $97 Bottom Right
+db $00, $00, $0f, $1f, $3a, $35, $3a, $35    ; $90 Top Left
+db $00, $00, $ff, $ff, $aa, $55, $aa, $ff    ; $91 Top
+db $00, $00, $e0, $f0, $a8, $74, $e8, $f4    ; $92 Top Right
+db $3b, $35, $3b, $35, $3b, $35, $3b, $35    ; $93 Left
+db $e8, $f4, $e8, $f4, $e8, $f4, $e8, $f4    ; $94 Right
+db $3b, $37, $3f, $15, $0a, $05, $00, $00    ; $95 Bottom Left
+db $ff, $ff, $ff, $55, $aa, $55, $00, $00    ; $96 Bottom
+db $e8, $f4, $e8, $54, $a8, $50, $00, $00    ; $97 Bottom Right
 
 ; -------------------------------------------------------------------
 ; Display frame for the game screen
@@ -176,5 +176,3 @@ ResetGame:
      ld   (ix), $00
      ld   (ix + $01), $00
 ret
-
-counter: db $00
