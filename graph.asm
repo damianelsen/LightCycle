@@ -34,18 +34,18 @@ ret
 ; -------------------------------------------------------------------
 NextScan:
      inc  d              ; Increment D to move to the next Scanline, D = 010TTSSS
-     ld   a, d           ; Load the high byte of the video memory address into A
-     and  $07            ; Mask with 00000111b to leave just the lower 3 bits (Scanline number)
+     ld   a, d           ; Load the high byte of the video memory address into A, D = 010TTSSS
+     and  %00000111      ; Mask to leave just the lower 3 bits (Scanline number)
      ret  nz             ; If not zero, we are still on the same Line, so exit
                          ; If zero, then Scanline was 7 = 111b and we have now set this to 0 and incremented the screen Third
      ld   a, e           ; Load the low byte of the video memory address into A, E = LLLCCCCC
-     add  a, $20         ; Add 00100000b = 32d to move to the next Line
+     add  a, %00100000   ; Move to the next Line
      ld   e, a           ; Store the updated low byte back into E
      ret  c              ; If there was a carry, then Line was 7d = 111b and we have now set this to 0
                          ; and we have moved to the next Third but this was already done with INC D
                          ; If there was no carry, then we are still on the same Third so we need to undo the INC D
-     ld   a, d           ; Load the high byte of the video memory address into A
-     sub  $08            ; Subtract 00001000b = 8d from D (010TTSSS) to decrease the screen Third
+     ld   a, d           ; Load the high byte of the video memory address into A, D = 010TTSSS
+     sub  %00001000      ; Decrease the screen Third
      ld   d, a           ; Store the updated high byte back into D
 ret
 
@@ -56,19 +56,19 @@ ret
 ; Alters the value of registers: AF DE
 ; -------------------------------------------------------------------
 PreviousScan:
-     ld   a, d           ; Load the high byte of the video memory address into A
-     dec  d              ; Decrement D to move to the previous Scanline, B = 010TTSSS
-     and  $07            ; Mask A with 00000111b to leave just the lower 3 bits (Scanline number)
+     ld   a, d           ; Load the high byte of the video memory address into A, D = 010TTSSS
+     dec  d              ; Decrement D to move to the previous Scanline
+     and  %00000111      ; Mask to leave just the lower 3 bits (Scanline number)
      ret  nz             ; If not zero, we are still on the same Line, so exit
                          ; If zero, then Scanline was 0 = 000b and we have now set this to 7 and decremented the screen Third
      ld   a, e           ; Load the low byte of the video memory address into A, E = LLLCCCCC
-     sub  $20            ; Subtract 00100000b = 32d to move to the previous Line
+     sub  %00100000      ; Move to the previous Line
      ld   e, a           ; Store the updated low byte back into E
-     ret  c              ; If there was a carry, then Line was 0d = 000b and we have now set this to 7
+     ret  c              ; If there was a carry, then Line was 0d = 000b and we have now set this to 7d
                          ; and we have moved to the previous Third but this was already done with DEC D
                          ; If there was no carry, then we are still on the same Third so we need to undo the DEC D
-     ld   a, d           ; Load the high byte of the video memory address into A
-     add  a, $08         ; Add 00001000b = 8d to D (010TTSSS) to increase the screen Third
+     ld   a, d           ; Load the high byte of the video memory address into A, D = 010TTSSS
+     add  a, %00001000   ; Increase the screen Third
      ld   d, a           ; Store the updated high byte back into D
 ret
 
@@ -85,14 +85,14 @@ NextBit:
      rrca                     ; Rotate A right with carry
      jr   nc, nextBitCont
      ld   a, e                ; Load 2nd byte of video byte memory address into A
-     and  $1f                 ; Mask with 00011111 to get the column number
+     and  %00011111           ; Mask to get the column number
      inc  a                   ; Move right by incrementing the column number
      ld   c, a                ; Store new column number in C
      ld   a, e                ; Load 2nd byte of video byte memory address into A again
-     and  $e0                 ; Mask with 11100000 to get the line number
+     and  %11100000           ; Mask to get the line number
      or   c                   ; Combine line number with new column number
      ld   e, a                ; Load updated 2nd byte of video byte memory address into E
-     ld   a, $80              ; Set A to 10000000b to move the player's position to the left of the next byte
+     ld   a, %10000000        ; Move the player's position to the left of the next byte
      nextBitCont:
      ld   c, a                ; Load C with updated video byte
 ret
@@ -110,14 +110,14 @@ PreviousBit:
      rlca                     ; Rotate A right with carry
      jr   nc, previousBitCont
      ld   a, e                ; Load 2nd byte of video byte memory address into A
-     and  $1f                 ; Mask with 00011111 to get the column number
+     and  %00011111           ; Mask to get the column number
      dec  a                   ; Move left by decrementing the column number
      ld   c, a                ; Store new column number in C
      ld   a, e                ; Load 2nd byte of video byte memory address into A again
-     and  $e0                 ; Mask with 11100000 to get the line number
+     and  %11100000           ; Mask to get the line number
      or   c                   ; Combine line number with new column number
      ld   e, a                ; Load updated 2nd byte of video byte memory address into E
-     ld   a, $01              ; Set A to 00000001b to move the player's position to the right of the next byte
+     ld   a, %00000001        ; Move the player's position to the right of the next byte
      previousBitCont:
      ld   c, a                ; Load C with updated video byte
 ret
@@ -127,37 +127,70 @@ ret
 ; Input: HL = Player config (at byte 4)
 ; Alters the value of registers: AF, BC, DE, HL
 ; -------------------------------------------------------------------
-DisplayPlayerDeath:
+DisplayCollision:
+     ;DisplayCollisionUpRight
      call LoadPlayerLocation
+     ld   a, d                ; Load 1st byte of player location into A
+     and  %00011000           ; Mask to get the screen third
+     and  a                   ; See if we are in screen third 0, if not continue
+     jr   nz, DisplayCollisionUpRightCont
+     ld   a, e                ; Load 2nd byte of player location into A
+     and  %11100000           ; Mask to get the line number
+     and  a                   ; See if we are on Line 0, if so skip
+     jr   z, DisplayCollisionDownRight
+     DisplayCollisionUpRightCont:
      call PreviousScan        ; Move to the previous scan line
      call NextBit             ; Move to the next pixel
      call UpdateVideoByte     ; Update the display
      call PreviousScan        ; Move to the previous scan line
      call NextBit             ; Move to the next pixel
      call UpdateVideoByte     ; Update the display
+     DisplayCollisionDownRight:
      call LoadPlayerLocation
+     ld   a, e                ; Load 2nd byte of player location into A
+     and  %00011111           ; Mask to get the column number
+     cp   30                  ; See if we are in Column 30, if so skip
+     jr   z, DisplayCollisionDownLeft
      call NextScan            ; Move to the next scan line
      call NextBit             ; Move to the next pixel
      call UpdateVideoByte     ; Update the display
      call NextScan            ; Move to the next scan line
      call NextBit             ; Move to the next pixel
      call UpdateVideoByte     ; Update the display
+     DisplayCollisionDownLeft:
      call LoadPlayerLocation
+     ld   a, e                ; Load 2nd byte of player location into A
+     and  %00011111           ; Mask to get the column number
+     and  a                   ; See if we are in Column 0, if so skip
+     jr   z, DisplayCollisionUpLeft
      call NextScan            ; Move to the next scan line
      call PreviousBit         ; Move to the previous pixel
      call UpdateVideoByte     ; Update the display
      call NextScan            ; Move to the next scan line
      call PreviousBit         ; Move to the previous pixel
      call UpdateVideoByte     ; Update the display
+     DisplayCollisionUpLeft:
      call LoadPlayerLocation
+     ld   a, e                ; Load 2nd byte of player location into A
+     and  %00011111           ; Mask to get the column number
+     and  a                   ; See if we are in Column 0, if so exit
+     ret  z
+     ld   a, d                ; Load 1st byte of player location into A
+     and  %00011000           ; Mask to get the screen third
+     and  a                   ; See if we are in screen third 0, if not continue
+     jr   nz, DisplayCollisionUpLeftCont
+     ld   a, e                ; Load 2nd byte of player location into A
+     and  %11100000           ; Mask to get the line number
+     and  a                   ; See if we are on Line 0, if so exit
+     ret  z
+     DisplayCollisionUpLeftCont:
      call PreviousScan        ; Move to the previous scan line
      call PreviousBit         ; Move to the previous pixel
      call UpdateVideoByte     ; Update the display
      call PreviousScan        ; Move to the previous scan line
      call PreviousBit         ; Move to the previous pixel
      call UpdateVideoByte     ; Update the display
-     halt
-     call Debug
+     ; TODO: need some kind of delay here; perhaps from a sound being played?
 ret
 
 ; -------------------------------------------------------------------

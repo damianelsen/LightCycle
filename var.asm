@@ -1,72 +1,171 @@
 ; -------------------------------------------------------------------
-; Main screen
+; Replacement character set UDGs
 ; -------------------------------------------------------------------
-mainScreen:
-db $16, $03, $0a                             ; $16 = AT, $03 = X =  3d, $0a = Y = 10d
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db 'LIGHT CYCLES'
-db $16, $08, $00                             ; $16 = AT, $0a = X = 10d, $00 = Y =  0d
-db $10, $04                                  ; $10 = INK, $04 = Green
-db 'Ride your futuristic Light Cycle'
-db 'around the arena whilst duelling'
-db $16, $0a, $06                             ; $16 = AT, $0c = X = 12d, $06 = Y =  6d
-db 'with your opponent.'
-db $16, $0b, $01                             ; $16 = AT, $0d = X = 13d, $01 = Y =  1d
-db 'Avoid colliding with the walls,'
-db $16, $0c, $03                             ; $16 = AT, $0e = X = 14d, $03 = Y =  3d
-db 'your opponent, or the light'
-db $16, $0d, $01                             ; $16 = AT, $0f = X = 15d, $01 = Y =  1d
-db 'trails.  The first rider to win'
-db $16, $0e, $03                             ; $16 = AT, $10 = X = 16d, $03 = Y =  3d
-db 'five matches wins the game.'
-db $16, $14, $06                             ; $16 = AT, $14 = X = 20d, $06 = Y =  6d
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db 'Press '
-db $10, $06                                  ; $10 = INK, $06 = Yellow
-db 'ENTER'
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db ' to Start'
+udgsChars:
+db $FE, $FE, $FE, $FE, $FE, $FE, $FE, $00    ; $20 SPACE
+db $FE, $EE, $EE, $EE, $FE, $EE, $FE, $00    ; $21 Exclamation Point
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $22
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $23
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $24
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $25
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $26
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $27
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $28
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $29
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $2A
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $2B
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $2C
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $2D
+db $FE, $FE, $FE, $EE, $FE, $FE, $FE, $00    ; $2E Full Stop
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $2F
+db $FE, $82, $BA, $BA, $BA, $82, $FE, $00    ; $30 Digit 0
+db $FE, $EE, $EE, $EE, $EE, $EE, $FE, $00    ; $31 Digit 1
+db $FE, $82, $FA, $82, $BE, $82, $FE, $00    ; $32 Digit 2
+db $FE, $82, $FA, $82, $FA, $82, $FE, $00    ; $33 Digit 3
+db $FE, $BE, $BE, $B6, $82, $F6, $FE, $00    ; $34 Digit 4
+db $FE, $82, $BE, $82, $FA, $82, $FE, $00    ; $35 Digit 5
+db $FE, $82, $BE, $82, $BA, $82, $FE, $00    ; $36 Digit 6
+db $FE, $82, $FA, $FA, $FA, $FA, $FE, $00    ; $37 Digit 7
+db $FE, $82, $BA, $82, $BA, $82, $FE, $00    ; $38 Digit 8
+db $FE, $82, $BA, $82, $FA, $82, $FE, $00    ; $39 Digit 9
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $3A
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $3B
+db $01, $04, $10, $40, $80, $20, $08, $02    ; $3C <
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $3D
+db $80, $20, $08, $02, $01, $04, $10, $40    ; $3E >
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $3F
+db $00, $00, $00, $00, $00, $00, $00, $00    ; $40
+db $FE, $C6, $BA, $BA, $82, $BA, $FE, $00    ; $41 Letter A
+db $FE, $86, $BA, $86, $BA, $86, $FE, $00    ; $42 Letter B
+db $FE, $C6, $BA, $BE, $BA, $C6, $FE, $00    ; $43 Letter C
+db $FE, $86, $BA, $BA, $BA, $86, $FE, $00    ; $44 Letter D
+db $FE, $82, $BE, $86, $BE, $82, $FE, $00    ; $45 Letter E
+db $FE, $82, $BE, $86, $BE, $BE, $FE, $00    ; $46 Letter F
+db $FE, $82, $BE, $B2, $BA, $82, $FE, $00    ; $47 Letter G
+db $FE, $BA, $BA, $82, $BA, $BA, $FE, $00    ; $48 Letter H
+db $FE, $82, $EE, $EE, $EE, $82, $FE, $00    ; $49 Letter I
+db $FE, $FA, $FA, $FA, $BA, $C6, $FE, $00    ; $4A Letter J
+db $FE, $BA, $B6, $8E, $B6, $BA, $FE, $00    ; $4B Letter K
+db $FE, $BE, $BE, $BE, $BE, $82, $FE, $00    ; $4C Letter L
+db $FE, $92, $AA, $AA, $BA, $BA, $FE, $00    ; $4D Letter M
+db $FE, $BA, $9A, $AA, $B2, $BA, $FE, $00    ; $4E Letter N
+db $FE, $C6, $BA, $BA, $BA, $C6, $FE, $00    ; $4F Letter O
+db $FE, $86, $BA, $86, $BE, $BE, $FE, $00    ; $50 Letter P
+db $FE, $82, $BA, $BA, $B2, $82, $FE, $00    ; $51 Letter Q
+db $FE, $86, $BA, $86, $B6, $BA, $FE, $00    ; $52 Letter R
+db $FE, $82, $BE, $82, $FA, $82, $FE, $00    ; $53 Letter S
+db $FE, $82, $EE, $EE, $EE, $EE, $FE, $00    ; $54 Letter T
+db $FE, $BA, $BA, $BA, $BA, $C6, $FE, $00    ; $55 Letter U
+db $FE, $BA, $BA, $D6, $D6, $EE, $FE, $00    ; $56 Letter V
+db $FE, $BA, $BA, $AA, $AA, $82, $FE, $00    ; $57 Letter W
+db $FE, $BA, $D6, $EE, $D6, $BA, $FE, $00    ; $58 Letter X
+db $FE, $BA, $BA, $C6, $EE, $EE, $FE, $00    ; $59 Letter Y
+db $FE, $82, $F6, $EE, $DE, $82, $FE, $00    ; $5A Letter Z
+
+; -------------------------------------------------------------------
+; Main/Title screen backgrounds
+; -------------------------------------------------------------------
+backgroundHeader:
+db 22, 0, 0                                  ; 22 = AT
+db $84, $8C, $8C, $8C, $8C, $8C, $8C, $8C
+db $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C
+db $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C
+db $8C, $8C, $8C, $8C, $8C, $8C, $8C, $88
+db $ff                                       ; String terminator
+
+backgroundRow:
+db $85, '<><><><><><><><><><><><><><><>', $8A
+db $ff                                       ; String terminator
+
+backgroundFooter:
+db 22, 0, 0                                  ; 22 = AT
+db 16, 6                                     ; 16 = INK, 6 = Yellow
+db $81, $83, $83, $83, $83, $83, $83, $83
+db $83, $83, $83, $83, $83, $83, $83, $83
+db $83, $83, $83, $83, $83, $83, $83, $83
+db $83, $83, $83, $83, $83, $83, $83, $82
 db $ff                                       ; String terminator
 
 ; -------------------------------------------------------------------
-; End Game screen
+; Main screen
+; -------------------------------------------------------------------
+mainScreen1:
+db 22, 4, 10                                 ; 22 = AT
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db 'LIGHT.CYCLES'
+db 22, 7, 3                                  ; 22 = AT
+db 16, 4                                     ; 16 = INK, 4 = Green
+db 'RIDE.YOUR.FUTURISTIC.LIGHT'
+db 22, 8, 5                                  ; 22 = AT
+db 'CYCLE.AROUND.THE.ARENA'
+db 22, 9, 6                                  ; 22 = AT
+db 'WHILST.DUELLING.WITH'
+db 22, 10, 9                                 ; 22 = AT
+db 'YOUR.OPPONENT'
+db 22, 11, 4                                 ; 22 = AT
+db 'AVOID.COLLIDING.WITH.THE'
+db 22, 12, 5                                 ; 22 = AT
+db 'WALLS.YOUR.OPPONENT.OR'
+db 22, 13, 8                                 ; 22 = AT
+db 'THE.LIGHT.TRAILS'
+db 22, 14, 5                                 ; 22 = AT
+db 'THE.FIRST.RIDER.TO.WIN'
+db 22, 15, 3                                 ; 22 = AT
+db 'FIVE.MATCHES.WINS.THE.GAME'
+db 22, 18, 6                                 ; 22 = AT
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db 'PRESS.'
+db 16, 6                                     ; 16 = INK, 6 = Yellow
+db 'ENTER'
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db '.TO.START'
+db $ff                                       ; String terminator
+
+mainScreen2:
+db 22, 1, 0                                  ; 22 = AT
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db 'ORIGINAL.PROGRAM.BY.DAMIAN.ELSEN'
+db $ff                                       ; String terminator
+
+; -------------------------------------------------------------------
+; End game screen
 ; -------------------------------------------------------------------
 endGameScreen:
-db $16, $03, $0a                             ; $16 = AT, $03 = X =  3d, $0a = Y = 10d
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db 'LIGHT CYCLES'
-db $16, $0b, $08                             ; $16 = AT, $0b = X = 11d, $08 = Y =  8d
-db $10, $04                                  ; $10 = INK, $04 = Green
-db 'Player '
-db $16, $0b, $12                             ; $16 = AT, $0b = X = 11d, $12 = Y = 18d
-db ' Wins!'
-db $16, $14, $05                             ; $16 = AT, $14 = X = 20d, $05 = Y =  5d
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db 'Press '
-db $10, $06                                  ; $10 = INK, $06 = Yellow
+db 22, 4, 10                                 ; 22 = AT
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db 'LIGHT.CYCLES'
+db 22, 11, 9                                 ; 22 = AT
+db 16, 4                                     ; 16 = INK, 4 = Green
+db 'RIDER.'
+db 22, 11, 18                                ; 22 = AT
+db 16, 4                                     ; 16 = INK, 4 = Green
+db '.WINS'
+db 22, 17, 5                                 ; 22 = AT
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db 'PRESS.'
+db 16, 6                                     ; 16 = INK, 6 = Yellow
 db 'ENTER'
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db ' to Restart'
-db $16, $15, $07                             ; $16 = AT, $15 = X = 21d, $07 = Y =  7d
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db 'Or press '
-db $10, $06                                  ; $10 = INK, $06 = Yellow
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db '.TO.RESTART'
+db 22, 18, 7                                 ; 22 = AT
+db 'OR.PRESS.'
+db 16, 6                                     ; 16 = INK, 6 = Yellow
 db 'X'
-db $10, $05                                  ; $10 = INK, $05 = Cyan
-db ' to Exit'
+db 16, 5                                     ; 16 = INK, 5 = Cyan
+db '.TO.QUIT'
 db $ff                                       ; String terminator
 
 ; -------------------------------------------------------------------
 ; Player names
 ; -------------------------------------------------------------------
 player1name:
-db $16, $0b, $0f                             ; $16 = AT, $0b = X = 11d, $0f = Y = 15d
-db $10, $06                                  ; $10 = INK, $06 = Yellow
+db 22, 11, 15                                ; 22 = AT
+db 16, 6                                     ; 16 = INK, 6 = Yellow
 db 'ONE'
 db $ff                                       ; String terminator
 player2name:
-db $16, $0b, $0f                             ; $16 = AT, $0b = X = 11d, $0f = Y = 15d
-db $10, $06                                  ; $10 = INK, $06 = Yellow
+db 22, 11, 15                                ; 22 = AT
+db 16, 6                                     ; 16 = INK, 6 = Yellow
 db 'TWO'
 db $ff                                       ; String terminator
 
@@ -87,15 +186,15 @@ db $e8, $f4, $e8, $54, $a8, $50, $00, $00    ; $97 Bottom Right
 ; Display frame for the game screen
 ; -------------------------------------------------------------------
 frameTopGraph:
-db $16, $00, $00                             ; $16 = AT, $00 = X =  0d, $00 = Y = 0d
-db $10, $05                                  ; $10 = COLOR, $05 = Cyan
+db 22, 0, 0                                  ; 22 = AT
+db 16, 5                                     ; 16 = COLOR, 5 = Cyan
 db $90, $91, $91, $91, $91, $91, $91, $91    ; $90 = Top Left, $91 = Top
 db $91, $91, $91, $91, $91, $91, $91, $91    ; $91 = Top
 db $91, $91, $91, $91, $91, $91, $91, $91    ; $91 = Top
 db $91, $91, $91, $91, $91, $91, $91, $92    ; $91 = Top, $92 = Top Right
 db $ff                                       ; String terminator
 frameBottomGraph:
-db $16, $15, $00                             ; $16 = AT, $15 = X = 21d, $00 = Y = 0d
+db 22, 21, 0                                 ; 22 = AT
 db $95, $96, $96, $96, $96, $96, $96, $96    ; $95 = Bottom Left, $96 = Bottom
 db $96, $96, $96, $96, $96, $96, $96, $96    ; $96 = Bottom
 db $96, $96, $96, $96, $96, $96, $96, $96    ; $96 = Bottom
@@ -106,19 +205,19 @@ db $ff                                       ; String terminator
 ; Blank string for clearing the play area
 ; -------------------------------------------------------------------
 blankLine:
-db $20, $20, $20, $20, $20, $20, $20, $20    ; $20 = SPACE
-db $20, $20, $20, $20, $20, $20, $20, $20
-db $20, $20, $20, $20, $20, $20, $20, $20
-db $20, $20, $20, $20, $20, $20
+db $22, $22, $22, $22, $22, $22, $22, $22    ; $22 = SPACE
+db $22, $22, $22, $22, $22, $22, $22, $22    ; $22 = SPACE
+db $22, $22, $22, $22, $22, $22, $22, $22    ; $22 = SPACE
+db $22, $22, $22, $22, $22, $22              ; $22 = SPACE
 db $ff                                       ; String terminator
 
 ; -------------------------------------------------------------------
 ; Labels for the game information panel
 ; -------------------------------------------------------------------
 infoGame:
-db $16, $00, $00                             ; $16 = AT, $00 = X = 0d, $00 = Y = 0d
-db $10, $04                                  ; $10 = INK, $04 = Green
-db 'Player 1      Time      Player 2'
+db 22, 0, 0                                  ; 22 = AT
+db 'RIDER.1       TIME       RIDER.2'
+db '                                '
 db $ff                                       ; String terminator
 
 ; -------------------------------------------------------------------
@@ -136,43 +235,12 @@ db $ff                                       ; String terminator
 ; -------------------------------------------------------------------
 ; Byte 3 indicates the player's location within the current byte
 ; -------------------------------------------------------------------
-                                        ;     TT SSS LLL CCCCC          XXXADURL
-player1config: db $4d, $47, $80, $12    ; 010 01 101 010 00111 10000000 00010010
-player2config: db $4d, $58, $01, $11    ; 010 01 101 010 11101 00000001 00010001
-
-; -------------------------------------------------------------------
-; Reset's both player's configs and time after end of match
-; Input: none
-; Alters the value of registers: IX
-; -------------------------------------------------------------------
-ResetMatch:
-     ld   ix, player1config
-     ld   (ix), $4d
-     ld   (ix + $01), $47
-     ld   (ix + $02), $80
-     ld   (ix + $03), $12
-     ld   ix, player2config
-     ld   (ix), $4d
-     ld   (ix + $01), $58
-     ld   (ix + $02), $01
-     ld   (ix + $03), $11
-     ld   ix, timer
-     ld   (ix), $00
-ret
+                    ; TTSSS   LLLCCCCC                 ADURL
+player1config: db %01001101, %01000111, %10000000, %00010010
+player2config: db %01001101, %01011101, %00000001, %00010001
 
 ; -------------------------------------------------------------------
 ; Player scores
 ; -------------------------------------------------------------------
-player1score: db $00
-player2score: db $00
-
-; -------------------------------------------------------------------
-; Reset's both player's scores after end of game
-; Input: none
-; Alters the value of registers: IX
-; -------------------------------------------------------------------
-ResetGame:
-     ld   ix, player1score
-     ld   (ix), $00
-     ld   (ix + $01), $00
-ret
+player1score: db 0
+player2score: db 0

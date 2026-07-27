@@ -4,9 +4,9 @@
 ; Alters the value of registers: AF, HL 
 ; -------------------------------------------------------------------
 MovePlayers:
-     ld   hl, player1config + $03
-     call MovePlayer
-     ld   hl, player2config + $03
+     ld   hl, player1config + 3
+     ;call MovePlayer
+     ld   hl, player2config + 3
      call MovePlayer
 ret
 
@@ -17,58 +17,58 @@ ret
 ; -------------------------------------------------------------------
 MovePlayer:
      ld   a, (hl)                  ; Load 4th byte of player config into A
-     bit  $04, a                   ; Check if bit 4 is active (alive)
-     jp   z, movePlayerEnd         ; If zero, player is not active so exit
-     bit  $03, a                   ; Check if bit 3 is active (moving down)
-     jr   nz, movePlayerUpDown
-     bit  $02, a                   ; Check if bit 2 is active (moving up)
-     jr   nz, movePlayerUpDown
-     bit  $01, a                   ; Check if bit 1 is active (moving right)
-     jr   nz, movePlayerRight
+     bit  4, a                     ; Check if bit 4 is active (alive)
+     ret  z                        ; If zero, player is not active so exit
+     cp   %00011000                ; Check if bit 3 is active (moving down)
+     jr   z, movePlayerUpDown
+     cp   %00010100                ; Check if bit 2 is active (moving up)
+     jr   z, movePlayerUpDown
+     cp   %00010010                ; Check if bit 1 is active (moving right)
+     jr   z, movePlayerRight
 
      ;movePlayerLeft               ; Bit 0 is active (moving left)
      dec  hl                       ; Move to the 3rd byte of player config
      ld   a, (hl)                  ; Load value into A
-     cp   $80                      ; Check if the player is at the left edge of the byte
+     cp   %10000000                ; Check if the player is at the left edge of the byte
      jr   nz, movePlayerLeftCont   ; If not, continue to move the player left
-     ld   a, $01                   ; Set A to 00000001b to move the player's position to the right of the next byte
+     ld   a, %00000001             ; Move the player's position to the right of the next byte
      ld   (hl), a                  ; Write updated value back to 3rd byte of player config
      dec  hl                       ; Move to the 2nd byte of player config
      ld   a, (hl)                  ; Load value into A
-     and  $1f                      ; Mask with 00011111 to get the column number
+     and  %00011111                ; Mask to get the column number
      dec  a                        ; Move player left by decrementing the column number
      ld   d, a                     ; Store new column number in D
      ld   a, (hl)                  ; Load 2nd byte of player config into A again
-     and  $e0                      ; Mask with 11100000 to get the line number
+     and  %11100000                ; Mask to get the line number
      or   d                        ; Combine line number with new column number
      ld   (hl), a                  ; Write updated column and line number back to 2nd byte of player config
-     jr   movePlayerEnd
+     ret
      movePlayerLeftCont:
      rlca                          ; Rotate left to move the player's position to the left
      ld   (hl), a                  ; Write updated player position back to 3rd byte of player config
-     jr   movePlayerEnd
+     ret
 
      movePlayerRight:
      dec  hl                       ; Move to the 3rd byte of player config
      ld   a, (hl)                  ; Load value into A
-     cp   $01                      ; Check if the player is at the right edge of the byte
+     cp   %00000001                ; Check if the player is at the right edge of the byte
      jr   nz, movePlayerRightCont  ; If not, continue to move the player right
-     ld   a, $80                   ; Set A to 10000000b to move the player's position to the left of the next byte
+     ld   a, %10000000             ; Move the player's position to the left of the next byte
      ld   (hl), a                  ; Write updated value back to 3rd byte of player config
      dec  hl                       ; Move to the 2nd byte of player config
      ld   a, (hl)                  ; Load value into A
-     and  $1f                      ; Mask with 00011111 to get the column number
+     and  %00011111                ; Mask to get the column number
      inc  a                        ; Move player right by incrementing the column number
      ld   d, a                     ; Store new column number in D
      ld   a, (hl)                  ; Load 2nd byte of player config into A again
-     and  $e0                      ; Mask with 11100000 to get the line number
+     and  %11100000                ; Mask to get the line number
      or   d                        ; Combine line number with new column number
      ld   (hl), a                  ; Write updated column and line number back to 2nd byte of player config
-     jr   movePlayerEnd
+     ret
      movePlayerRightCont:
      rra                           ; Rotate right to move the player's position to the right
      ld   (hl), a                  ; Write updated player position back to 3rd byte of player config
-     jr   movePlayerEnd
+     ret
 
      movePlayerUpDown:
      dec  hl                       ; Move to the 3rd byte of player config
@@ -76,32 +76,32 @@ MovePlayer:
      ld   e, (hl)                  ; Load the 2nd byte of player config into E
      dec  hl                       ; Move to the 1st byte of player config
      ld   d, (hl)                  ; Load the 1st byte of player config into D
-     bit  $02, a                   ; Check if bit 2 is active (moving up)
+     bit  2, a                     ; Check if bit 2 is active (moving up)
      jr   nz, movePlayerUp         ; If bit 2 is active, jump to movePlayerUp
      ;movePlayerDown
      call NextScan                 ; Move to the next scan line
      ld   a, d                     ; Load 1st byte of player config into A
-     and  $18                      ; Mask with 00011000b to get the screen Third
-     cp   $10                      ; Compare with 00010000b to see if we are in the third Third
+     and  %00011000                ; Mask to get the screen Third
+     cp   %00010000                ; See if we are in the third Third
      jr   nz, movePlayerUpDownCont ; If zero, jump to close out of the routine
      ld   a, e                     ; Load 2nd byte of player config into A
-     and  $e0                      ; Mask with 11100000b to get the Line number
-     cp   $a0                      ; Compare with 10100000b to see if we are on Line 5
+     and  %11100000                ; Mask to get the line number
+     cp   %10100000                ; See if we are on Line 5
      jr   z, movePlayerUpDownCrash ; If zero, jump to indicate the player is no longer active
      jr   movePlayerUpDownCont
      movePlayerUp:
      call PreviousScan             ; Move to the previous scan line
      ld   a, d                     ; Load 1st byte of player config into A
-     and  $18                      ; Mask with 00011000b to get the screen Third
+     and  %00011000                ; Mask to get the screen Third
      jr   nz, movePlayerUpDownCont ; If not zero, jump to close out of the routine
      ld   a, e                     ; Load 2nd byte of player config into A
-     and  $e0                      ; Mask with 11100000b to get the Line number
+     and  %11100000                ; Mask to get the line number
      jr   nz, movePlayerUpDownCont ; If not zero, jump to close out of the routine
      movePlayerUpDownCrash:
      inc  hl                       ; Move to the 2nd byte of player config
      inc  hl                       ; Move to the 3rd byte of player config
      inc  hl                       ; Move to the 4th byte of player config
-     res  $04, (hl)                ; Clear bit 4 to indicate the player is no longer active
+     res  4, (hl)                  ; Clear bit 4 to indicate the player is no longer active
      dec  hl                       ; Move to the 3rd byte of player config
      dec  hl                       ; Move to the 2nd byte of player config
      dec  hl                       ; Move to the 1st byte of player config
@@ -109,8 +109,6 @@ MovePlayer:
      ld   (hl), d                  ; Write updated 1st byte of player config
      inc  hl                       ; Move to the 2nd byte of player config
      ld   (hl), e                  ; Write updated 2nd byte of player config
-
-     movePlayerEnd:
 ret
 
 ; -------------------------------------------------------------------
@@ -125,7 +123,7 @@ CheckCollision:
      and  d                        ; AND with A (video memory byte of player's position)
      jr   z, CheckCollisionEnd     ; If 0, there is no collision
      inc  hl                       ; Move to the 4th byte of player config
-     res  $04, (hl)                ; Clear bit 4 to indicate the player has collided and is no longer active
+     res  4, (hl)                  ; Clear bit 4 to indicate the player has collided and is no longer active
      dec  hl                       ; Move to the 3rd byte of player config
      CheckCollisionEnd:
      pop  af                       ; Retrieve A
@@ -138,17 +136,17 @@ ret
 ; -------------------------------------------------------------------
 CheckPlayers:
      ;checkPlayer1
-     ld   hl, player1config + $03  ; Load address of 4th byte of player 1 config to HL
-     bit  $04, (hl)                ; Check if bit 4 is active (player is alive)
+     ld   hl, player1config + 3    ; Load address of 4th byte of player 1 config to HL
+     bit  4, (hl)                  ; Check if bit 4 is active (player is alive)
      jr   nz, checkPlayer2         ; If alive, check player 2
-     call DisplayPlayerDeath       ; Display player 1 death animation
+     call DisplayCollision         ; Display player 1 death animation
      ld   hl, player2score         ; Load memory address of player 2's score
      jr   checkPlayersCont
      checkPlayer2:
-     ld   hl, player2config + $03  ; Load address of 4th byte of player 2 config to HL
-     bit  $04, (hl)                ; Check if bit 4 is active (player is alive)
+     ld   hl, player2config + 3    ; Load address of 4th byte of player 2 config to HL
+     bit  4, (hl)                  ; Check if bit 4 is active (player is alive)
      ret  nz                       ; If alive, exit
-     call DisplayPlayerDeath       ; Display player 2 death animation
+     call DisplayCollision         ; Display player 2 death animation
      ld   hl, player1score         ; Load memory address of player 1's score
      checkPlayersCont:
      inc  (hl)                     ; Increment player score
@@ -163,12 +161,12 @@ jp   mainRestartMatch
 CheckScores:
      ld   hl, player1score         ; Load memory address of player 1's score
      ld   a, (hl)                  ; Load player 1's score into A
-     cp   $05                      ; Compare with 5d
+     cp   5                        ; Compare with 5d
      jr   z, CheckScoresEnd        ; If 5, then jump
      ;CheckScoresP2
      ld   hl, player2score         ; Load memory address of player 2's score
      ld   a, (hl)                  ; Load player 2's score into A
-     cp   $05                      ; Compare with 5d
+     cp   5                        ; Compare with 5d
      ret  nz                      ; If not 5, then exit
      CheckScoresEnd:
      call PrintEndGameScreen
