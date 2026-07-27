@@ -190,7 +190,6 @@ DisplayCollision:
      call PreviousScan        ; Move to the previous scan line
      call PreviousBit         ; Move to the previous pixel
      call UpdateVideoByte     ; Update the display
-     ; TODO: need some kind of delay here; perhaps from a sound being played?
 ret
 
 ; -------------------------------------------------------------------

@@ -5,9 +5,10 @@
 ; -------------------------------------------------------------------
 MovePlayers:
      ld   hl, player1config + 3
-     ;call MovePlayer
+     call MovePlayer
      ld   hl, player2config + 3
      call MovePlayer
+     call SoundMove
 ret
 
 ; -------------------------------------------------------------------
@@ -140,6 +141,7 @@ CheckPlayers:
      bit  4, (hl)                  ; Check if bit 4 is active (player is alive)
      jr   nz, checkPlayer2         ; If alive, check player 2
      call DisplayCollision         ; Display player 1 death animation
+     call SoundCollision           ; Play collision sound
      ld   hl, player2score         ; Load memory address of player 2's score
      jr   checkPlayersCont
      checkPlayer2:
@@ -147,6 +149,7 @@ CheckPlayers:
      bit  4, (hl)                  ; Check if bit 4 is active (player is alive)
      ret  nz                       ; If alive, exit
      call DisplayCollision         ; Display player 2 death animation
+     call SoundCollision           ; Play collision sound
      ld   hl, player1score         ; Load memory address of player 1's score
      checkPlayersCont:
      inc  (hl)                     ; Increment player score

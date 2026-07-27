@@ -18,7 +18,7 @@ db $00, $00, $00, $00, $00, $00, $00, $00    ; $2C
 db $00, $00, $00, $00, $00, $00, $00, $00    ; $2D
 db $FE, $FE, $FE, $EE, $FE, $FE, $FE, $00    ; $2E Full Stop
 db $00, $00, $00, $00, $00, $00, $00, $00    ; $2F
-db $FE, $82, $BA, $BA, $BA, $82, $FE, $00    ; $30 Digit 0
+db $FE, $C6, $BA, $BA, $BA, $C6, $FE, $00    ; $30 Digit 0
 db $FE, $EE, $EE, $EE, $EE, $EE, $FE, $00    ; $31 Digit 1
 db $FE, $82, $FA, $82, $BE, $82, $FE, $00    ; $32 Digit 2
 db $FE, $82, $FA, $82, $FA, $82, $FE, $00    ; $33 Digit 3
@@ -35,9 +35,9 @@ db $00, $00, $00, $00, $00, $00, $00, $00    ; $3D
 db $80, $20, $08, $02, $01, $04, $10, $40    ; $3E >
 db $00, $00, $00, $00, $00, $00, $00, $00    ; $3F
 db $00, $00, $00, $00, $00, $00, $00, $00    ; $40
-db $FE, $C6, $BA, $BA, $82, $BA, $FE, $00    ; $41 Letter A
+db $FE, $82, $BA, $82, $BA, $BA, $FE, $00    ; $41 Letter A
 db $FE, $86, $BA, $86, $BA, $86, $FE, $00    ; $42 Letter B
-db $FE, $C6, $BA, $BE, $BA, $C6, $FE, $00    ; $43 Letter C
+db $FE, $82, $BE, $BE, $BE, $82, $FE, $00    ; $43 Letter C
 db $FE, $86, $BA, $BA, $BA, $86, $FE, $00    ; $44 Letter D
 db $FE, $82, $BE, $86, $BE, $82, $FE, $00    ; $45 Letter E
 db $FE, $82, $BE, $86, $BE, $BE, $FE, $00    ; $46 Letter F
@@ -49,7 +49,7 @@ db $FE, $BA, $B6, $8E, $B6, $BA, $FE, $00    ; $4B Letter K
 db $FE, $BE, $BE, $BE, $BE, $82, $FE, $00    ; $4C Letter L
 db $FE, $92, $AA, $AA, $BA, $BA, $FE, $00    ; $4D Letter M
 db $FE, $BA, $9A, $AA, $B2, $BA, $FE, $00    ; $4E Letter N
-db $FE, $C6, $BA, $BA, $BA, $C6, $FE, $00    ; $4F Letter O
+db $FE, $82, $BA, $BA, $BA, $82, $FE, $00    ; $4F Letter O
 db $FE, $86, $BA, $86, $BE, $BE, $FE, $00    ; $50 Letter P
 db $FE, $82, $BA, $BA, $B2, $82, $FE, $00    ; $51 Letter Q
 db $FE, $86, $BA, $86, $B6, $BA, $FE, $00    ; $52 Letter R
@@ -59,7 +59,7 @@ db $FE, $BA, $BA, $BA, $BA, $C6, $FE, $00    ; $55 Letter U
 db $FE, $BA, $BA, $D6, $D6, $EE, $FE, $00    ; $56 Letter V
 db $FE, $BA, $BA, $AA, $AA, $82, $FE, $00    ; $57 Letter W
 db $FE, $BA, $D6, $EE, $D6, $BA, $FE, $00    ; $58 Letter X
-db $FE, $BA, $BA, $C6, $EE, $EE, $FE, $00    ; $59 Letter Y
+db $FE, $BA, $BA, $D6, $EE, $EE, $FE, $00    ; $59 Letter Y
 db $FE, $82, $F6, $EE, $DE, $82, $FE, $00    ; $5A Letter Z
 
 ; -------------------------------------------------------------------
@@ -134,10 +134,10 @@ endGameScreen:
 db 22, 4, 10                                 ; 22 = AT
 db 16, 5                                     ; 16 = INK, 5 = Cyan
 db 'LIGHT.CYCLES'
-db 22, 11, 9                                 ; 22 = AT
+db 22, 10, 9                                 ; 22 = AT
 db 16, 4                                     ; 16 = INK, 4 = Green
 db 'RIDER.'
-db 22, 11, 18                                ; 22 = AT
+db 22, 10, 18                                ; 22 = AT
 db 16, 4                                     ; 16 = INK, 4 = Green
 db '.WINS'
 db 22, 17, 5                                 ; 22 = AT
@@ -159,12 +159,12 @@ db $ff                                       ; String terminator
 ; Player names
 ; -------------------------------------------------------------------
 player1name:
-db 22, 11, 15                                ; 22 = AT
+db 22, 10, 15                                ; 22 = AT
 db 16, 6                                     ; 16 = INK, 6 = Yellow
 db 'ONE'
 db $ff                                       ; String terminator
 player2name:
-db 22, 11, 15                                ; 22 = AT
+db 22, 10, 15                                ; 22 = AT
 db 16, 6                                     ; 16 = INK, 6 = Yellow
 db 'TWO'
 db $ff                                       ; String terminator

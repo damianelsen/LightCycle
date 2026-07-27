@@ -52,7 +52,6 @@ Main:
           call DisplayPlayers
           call CheckControls
           call MovePlayers
-          call SoundMove
           call CheckPlayers
           call CheckScores
           call PrintTime
@@ -66,6 +65,5 @@ include "game.asm"
 include "graph.asm"
 include "control.asm"
 include "sound.asm"
-;include "debug.asm"
 
 end  Main
