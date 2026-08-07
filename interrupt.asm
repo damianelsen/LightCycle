@@ -1,7 +1,7 @@
-org  $7e5c
+org  32348
 
-flags:    equ $5dfd           ; Global game indicators
-timer:    equ $5dfe           ; Match time elapsed counter
+flags:    equ 24101           ; Global game indicators
+timer:    equ 24102           ; Match time elapsed counter
 
 ;Interrupt
      push af                  ; Preserve AF

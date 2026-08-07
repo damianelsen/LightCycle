@@ -62,18 +62,6 @@ PrintBCD:
 ret
 
 ; -------------------------------------------------------------------
-; Prints a single number in BCD format
-; Input: HL = address of number to be printed
-; Alters the value of registers: AF
-; -------------------------------------------------------------------
-PrintBCDSingle:
-     ld   a, (hl)               ; Load A with number to be displayed again
-     and  $0f                   ; Mask A with 00001111 to get the units digit
-     add  a, '0'                ; Convert to ASCII character
-     rst  16                  ; Display the units digit
-ret
-
-; -------------------------------------------------------------------
 ; Prints the screen backgtound
 ; Input: none
 ; Alters the value of registers: AF, BC, HL 
@@ -93,11 +81,11 @@ PrintBackground:
           cp   2                   ; Stop at line 2
      jr   nz, printBackgroundLoop
      ld   a, 1                     ; A = 1
-     call OPENCHAN                 ; Activates channel 1
+     call OPEN_CHAN                ; Activates channel 1
      ld   hl, backgroundFooter
      call PrintString
      ld   a, 2                     ; A = 2
-     call OPENCHAN                 ; Activates channel 2
+     call OPEN_CHAN                ; Activates channel 2
 ret
 
 ; -------------------------------------------------------------------
@@ -110,11 +98,11 @@ PrintMainScreen:
      ld   hl, mainScreen1     ; HL = address string
      call PrintString         ; Paints string
      ld   a, 1                ; A = 1
-     call OPENCHAN            ; Activates channel 1
+     call OPEN_CHAN           ; Activates channel 1
      ld   hl, mainScreen2     ; HL = address string
      call PrintString         ; Paints string
      ld   a, 2                ; A = 2
-     call OPENCHAN            ; Activates channel 2
+     call OPEN_CHAN           ; Activates channel 2
      printMainScreenLoop:
           ld   a, $bf         ; Load A with half-stack for keys ENTER-H
           in   a, ($fe)       ; Read keyboard
@@ -174,11 +162,11 @@ ret
 ; -------------------------------------------------------------------
 PrintInfoLabels:
      ld   a, 1                ; A = 1
-     call OPENCHAN            ; Activates channel 1
+     call OPEN_CHAN           ; Activates channel 1
      ld   hl, infoGame        ; HL = address info labels
      call PrintString         ; Prints string
      ld   a, 2                ; A = 2
-     call OPENCHAN            ; Activates channel 2
+     call OPEN_CHAN           ; Activates channel 2
 ret
 
 ; -------------------------------------------------------------------
@@ -188,19 +176,23 @@ ret
 ; -------------------------------------------------------------------
 PrintScores:
      ld   a, 1                ; A = 1
-     call OPENCHAN            ; Activate channel 1
+     call OPEN_CHAN           ; Activate channel 1
      ld   b, OFFSET_Y - 1     ; Row    = 1d
      ld   c, OFFSET_X - 0     ; Column = 0d
      call At                  ; Position cursor at (1, 0)
      ld   hl, player1score    ; Load player 1 score
-     call PrintBCDSingle      ; Update score display
+     ld   b, 0
+     ld   c, (hl)
+     call PRINT_BC            ; Update score display
      ld   b, OFFSET_Y - 1     ; Row    =  1d
      ld   c, OFFSET_X - 31    ; Column = 31d
      call At                  ; Position cursor at (1, 31)
      ld   hl, player2score    ; Load player 2 score
-     call PrintBCDSingle      ; Update score display
+     ld   b, 0
+     ld   c, (hl)
+     call PRINT_BC            ; Update score display
      ld   a, 2                ; A = 2
-     call OPENCHAN            ; Activate channel 2
+     call OPEN_CHAN           ; Activate channel 2
 ret
 
 ; -------------------------------------------------------------------
@@ -210,14 +202,14 @@ ret
 ; -------------------------------------------------------------------
 PrintTime:
      ld   a, 1                ; A = 1
-     call OPENCHAN            ; Activate channel 1
+     call OPEN_CHAN           ; Activate channel 1
      ld   b, OFFSET_Y - 1     ; Row    =  1d
      ld   c, OFFSET_X - 15    ; Column = 15d
      call At                  ; Position cursor at (1, 15)
      ld   hl, timer           ; Load HL with memory address of match timer
      call PrintBCD            ; Update timer display
      ld   a, 2                ; A = 2
-     call OPENCHAN            ; Activate channel 2
+     call OPEN_CHAN           ; Activate channel 2
 ret
 
 ; -------------------------------------------------------------------

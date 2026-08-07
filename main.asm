@@ -1,4 +1,4 @@
-org  $5dfd
+org  24101
 
 flags:    db 0      ; Global Game Indicators: Bit 0 - Allow game movement? 0 = No, 1 = Yes
 timer:    db 0      ; Used to track the elapsed time of each match
