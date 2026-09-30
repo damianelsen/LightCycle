@@ -1,6 +1,5 @@
 ; Memory addresses for various game elements
 ATTR_PERM:     equ 23693      ; Memory address where permanent color attributes are stored (FBPPPIII)
-;ATTR_TEMP:     equ 23695     ; Memory address where attributes used by RST 16 are stored (FBPPPIII)
 BORDERCR:      equ 23624      ; Memory address where color attributes of the border are stored (FBPPPIII)
 UDG:           equ 23675      ; Memory address where the first user-defined graphic (UDG) is stored
 CHARS:         equ 23606      ; Memory address where the default character set is stored

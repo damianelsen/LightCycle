@@ -59,10 +59,12 @@ Main:
 
 include "const.asm"
 include "var.asm"
+include "screen.asm"
 include "global.asm"
 include "print.asm"
 include "game.asm"
 include "graph.asm"
+include "sprite.asm"
 include "control.asm"
 include "sound.asm"
 

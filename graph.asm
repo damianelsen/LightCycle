@@ -73,149 +73,89 @@ PreviousScan:
 ret
 
 ; -------------------------------------------------------------------
-; Move right by one pixel
-; Input:  C  = Video byte
-;         DE = Video byte memory address
-; Output: C  = Updated video byte
-;         DE = Updated video byte memory address
-; Alters the value of registers: AF, BC, DE
-; -------------------------------------------------------------------
-NextBit:
-     ld   a, c                ; Load A with video byte
-     rrca                     ; Rotate A right with carry
-     jr   nc, nextBitCont
-     ld   a, e                ; Load 2nd byte of video byte memory address into A
-     and  %00011111           ; Mask to get the column number
-     inc  a                   ; Move right by incrementing the column number
-     ld   c, a                ; Store new column number in C
-     ld   a, e                ; Load 2nd byte of video byte memory address into A again
-     and  %11100000           ; Mask to get the line number
-     or   c                   ; Combine line number with new column number
-     ld   e, a                ; Load updated 2nd byte of video byte memory address into E
-     ld   a, %10000000        ; Move the player's position to the left of the next byte
-     nextBitCont:
-     ld   c, a                ; Load C with updated video byte
-ret
-
-; -------------------------------------------------------------------
-; Move left by one pixel
-; Input:  C  = Video byte
-;         DE = Video byte memory address
-; Output: C  = Updated video byte
-;         DE = Updated video byte memory address
-; Alters the value of registers: AF, BC, DE
-; -------------------------------------------------------------------
-PreviousBit:
-     ld   a, c                ; Load A with video byte
-     rlca                     ; Rotate A right with carry
-     jr   nc, previousBitCont
-     ld   a, e                ; Load 2nd byte of video byte memory address into A
-     and  %00011111           ; Mask to get the column number
-     dec  a                   ; Move left by decrementing the column number
-     ld   c, a                ; Store new column number in C
-     ld   a, e                ; Load 2nd byte of video byte memory address into A again
-     and  %11100000           ; Mask to get the line number
-     or   c                   ; Combine line number with new column number
-     ld   e, a                ; Load updated 2nd byte of video byte memory address into E
-     ld   a, %00000001        ; Move the player's position to the right of the next byte
-     previousBitCont:
-     ld   c, a                ; Load C with updated video byte
-ret
-
-; -------------------------------------------------------------------
 ; Display player death animation
-; Input: HL = Player config (at byte 4)
-; Alters the value of registers: AF, BC, DE, HL
+; Input:  HL = Player config (at byte 4)
+; Output: none
+; Alters the value of registers: AF BC DE HL
 ; -------------------------------------------------------------------
 DisplayCollision:
-     ;DisplayCollisionUpRight
-     call LoadPlayerLocation
-     ld   a, d                ; Load 1st byte of player location into A
-     and  %00011000           ; Mask to get the screen third
-     and  a                   ; See if we are in screen third 0, if not continue
-     jr   nz, DisplayCollisionUpRightCont
-     ld   a, e                ; Load 2nd byte of player location into A
-     and  %11100000           ; Mask to get the line number
-     and  a                   ; See if we are on Line 0, if so skip
-     jr   z, DisplayCollisionDownRight
-     DisplayCollisionUpRightCont:
-     call PreviousScan        ; Move to the previous scan line
-     call NextBit             ; Move to the next pixel
-     call UpdateVideoByte     ; Update the display
-     call PreviousScan        ; Move to the previous scan line
-     call NextBit             ; Move to the next pixel
-     call UpdateVideoByte     ; Update the display
-     DisplayCollisionDownRight:
-     call LoadPlayerLocation
-     ld   a, e                ; Load 2nd byte of player location into A
-     and  %00011111           ; Mask to get the column number
-     cp   30                  ; See if we are in Column 30, if so skip
-     jr   z, DisplayCollisionDownLeft
-     call NextScan            ; Move to the next scan line
-     call NextBit             ; Move to the next pixel
-     call UpdateVideoByte     ; Update the display
-     call NextScan            ; Move to the next scan line
-     call NextBit             ; Move to the next pixel
-     call UpdateVideoByte     ; Update the display
-     DisplayCollisionDownLeft:
-     call LoadPlayerLocation
-     ld   a, e                ; Load 2nd byte of player location into A
-     and  %00011111           ; Mask to get the column number
-     and  a                   ; See if we are in Column 0, if so skip
-     jr   z, DisplayCollisionUpLeft
-     call NextScan            ; Move to the next scan line
-     call PreviousBit         ; Move to the previous pixel
-     call UpdateVideoByte     ; Update the display
-     call NextScan            ; Move to the next scan line
-     call PreviousBit         ; Move to the previous pixel
-     call UpdateVideoByte     ; Update the display
-     DisplayCollisionUpLeft:
-     call LoadPlayerLocation
-     ld   a, e                ; Load 2nd byte of player location into A
-     and  %00011111           ; Mask to get the column number
-     and  a                   ; See if we are in Column 0, if so exit
-     ret  z
-     ld   a, d                ; Load 1st byte of player location into A
-     and  %00011000           ; Mask to get the screen third
-     and  a                   ; See if we are in screen third 0, if not continue
-     jr   nz, DisplayCollisionUpLeftCont
-     ld   a, e                ; Load 2nd byte of player location into A
-     and  %11100000           ; Mask to get the line number
-     and  a                   ; See if we are on Line 0, if so exit
-     ret  z
-     DisplayCollisionUpLeftCont:
-     call PreviousScan        ; Move to the previous scan line
-     call PreviousBit         ; Move to the previous pixel
-     call UpdateVideoByte     ; Update the display
-     call PreviousScan        ; Move to the previous scan line
-     call PreviousBit         ; Move to the previous pixel
-     call UpdateVideoByte     ; Update the display
-ret
-
-; -------------------------------------------------------------------
-; Load the current location of the player
-; Input: HL = Player config (at byte 4)
-; Alters the value of registers: BC, DE
-; -------------------------------------------------------------------
-LoadPlayerLocation:
-     push hl                       ; Preserve HL
      dec  hl                       ; Move to 3rd byte of player config
-     ld   c, (hl)                  ; Load 3rd byte of player config into C
      dec  hl                       ; Move to 2nd byte of player config
      ld   e, (hl)                  ; Load 2nd byte of player config into E
      dec  hl                       ; Move to 1st byte of player config
      ld   d, (hl)                  ; Load 1st byte of player config into D
-     pop  hl                       ; Retrieve HL
+     inc  hl                       ; 2nd byte of player config
+     inc  hl                       ; 3rd byte of player config
+
+     ld   b, 3                     ; Move up three scan lines
+     displayCollisionLoop1:
+          call PreviousScan
+     djnz displayCollisionLoop1
+
+     ld   a, (hl)                  ; Load player's current position into A
+     and  %00001111                ; Retain only the lower nibble
+     jr   nz, displayCollisionCont ; If A is not zero (there is a value in the lower nibble) we jump
+     dec  de                       ; A is zero (there was a value in the higher nibble) so we need to move left by one video byte
+     displayCollisionCont:
+     
+     push de                       ; Store DE
+     ld   de, 16                   ; Load DE with sprite RAM location offset (16)
+     ld   b, 7                     ; Loop 7 times
+     ld   a, (hl)                  ; Load player's current position into A
+     ld   hl, spriteExplosion      ; Load the initial sprite address into HL
+     displayCollisionLoop2:
+          rrc  a                   ; Rotate right with carry
+          jr   c, displayCollisionLoop2Exit ; If the carry bit is set we can exit
+          add  hl, de              ; Add the sprite RAM location offset to HL
+     djnz displayCollisionLoop2    ; Loop
+     displayCollisionLoop2Exit:
+     pop de
+
+     ld   b, 8                     ; The sprite has 8 rows
+     displayCollisionLoop3:
+          call DisplayByte         ; Display the column 1 byte of the sprite
+          inc  de                  ; Move to column 2
+          call DisplayByte         ; Display the column 2 byte of the sprite
+          dec  de                  ; Return to column 1
+          call NextScan            ; Move down to the next scan line
+     djnz displayCollisionLoop3
 ret
 
 ; -------------------------------------------------------------------
 ; Update a single video memory byte
-; Input:  C  = Video byte
-;         DE = Memory location of video byte to update
-; Alters the value of registers: AF
+; Input:  DE = Memory location of video byte to update
+;         HL = Memory location of video byte to use
+; Output: none
+; Alters the value of registers: AF HL
 ; -------------------------------------------------------------------
-UpdateVideoByte:
-     ld   a, (de)
-     or   c
-     ld   (de), a
+DisplayByte:
+     ld   a, d                     ; Load 1st byte of video RAM location to update
+     and  %00011000                ; Mask to get the screen third
+     jr   nz, displayByteCont1     ; Jump if we are not in screen third 0
+     ld   a, e                     ; Load 2nd byte of video RAM location to update
+     and  %11100000                ; Mask to get the line number
+     jr   z, displayByteExit       ; Jump if we are on line 0
+
+     displayByteCont1:
+     ld   a, d                     ; Load 1st byte of video RAM location to update
+     and  %00010000                ; Mask to see if we are in screen third 2
+     jr   z, displayByteCont2      ; Jump if we are not
+     ld   a, e                     ; Load 2nd byte of video RAM location to update
+     and  %11100000                ; Mask to get the line number
+     cp   160                      ; See if we are on Line 5, 101 (5) in the three most signifcant bits = 160
+     jr   z, displayByteExit       ; If so, exit
+
+     displayByteCont2:
+     ld   a, e                     ; Load 2nd byte of video RAM location to update
+     and  %00011111                ; Mask to get the column number
+     jr   z, displayByteExit       ; If it's zero, exit
+     cp   31                       ; See if we are in column 31
+     jr   z, displayByteExit       ; If so, exit
+
+     ld   a, (de)                  ; Load video RAM byte to update
+     or   (hl)                     ; Combine with the video memory byte to be displayed
+     ld   (de), a                  ; Update the video RAM
+     
+     displayByteExit:
+     inc  hl                       ; Move to the next byte
 ret

@@ -13,21 +13,6 @@ At:
 ret
 
 ; -------------------------------------------------------------------
-; Sets the ink color for printing
-; Input: A = ink color
-; Alters the value of registers: AF, BC
-; -------------------------------------------------------------------
-; Ink:
-;      exx                      ; Swap all registers
-;      ld   b, a                ; Load ink color into B
-;      ld   a, (ATTR_TEMP)      ; Load temporary color attributes into A
-;      and  %11111000           ; Mask to remove ink color
-;      or   b                   ; Add ink color
-;      ld   (ATTR_TEMP), a      ; Save new temporary color attributes in memory
-;      exx                      ; Swap all registers back
-; ret
-
-; -------------------------------------------------------------------
 ; Prints a string of characters to the screen, terminated with $ff
 ; Input: HL = address of the first character of the string
 ; Alters the value of registers: AF, HL
